@@ -13,11 +13,22 @@ import {
 } from "react-native";
 
 export const LoginScreen = () => {
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+
 	const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
 	const keyboardHide = () => {
 		setIsShowKeyboard(false);
 		Keyboard.dismiss();
+	};
+
+	const onSubmitForm = () => {
+		setIsShowKeyboard(false);
+		Keyboard.dismiss();
+		setEmail("");
+		setPassword("");
+		console.log({ email, password });
 	};
 
 	return (
@@ -33,6 +44,8 @@ export const LoginScreen = () => {
 										style={styles.input}
 										placeholder={"Адрес электронной почты"}
 										placeholderTextColor={"#BDBDBD"}
+										value={email}
+										onChangeText={value => setEmail(value)}
 										onFocus={() => setIsShowKeyboard(true)}
 									/>
 								</View>
@@ -42,16 +55,20 @@ export const LoginScreen = () => {
 										placeholder={"Пароль"}
 										placeholderTextColor={"#BDBDBD"}
 										secureTextEntry={true}
+										value={password}
+										onChangeText={value => setPassword(value)}
 										onFocus={() => setIsShowKeyboard(true)}
 									/>
 								</View>
-								<TouchableOpacity activeOpacity={0.8} style={styles.btnLogin}>
+								<TouchableOpacity activeOpacity={0.8} style={styles.btnLogin} onPress={onSubmitForm}>
 									<Text style={styles.btnLoginTitle}>Войти</Text>
 								</TouchableOpacity>
 							</View>
-							<TouchableOpacity style={styles.btnRegister}>
-								<Text style={styles.btnRegisterTitle}>Нет аккаунта? Зарегистрироваться</Text>
-							</TouchableOpacity>
+							{!isShowKeyboard && (
+								<TouchableOpacity style={styles.btnRegister}>
+									<Text style={styles.btnRegisterTitle}>Нет аккаунта? Зарегистрироваться</Text>
+								</TouchableOpacity>
+							)}
 						</View>
 					</KeyboardAvoidingView>
 				</ImageBackground>
@@ -102,7 +119,6 @@ const styles = StyleSheet.create({
 		color: "#212121",
 	},
 	btnLogin: {
-		marginBottom: 16,
 		height: 50,
 
 		justifyContent: "center",
@@ -119,6 +135,7 @@ const styles = StyleSheet.create({
 	},
 	btnRegister: {
 		marginHorizontal: 50,
+		marginTop: 16,
 
 		justifyContent: "center",
 		alignItems: "center",

@@ -13,11 +13,24 @@ import {
 } from "react-native";
 
 export const RegistrationScreen = () => {
+	const [login, setLogin] = useState("");
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+
 	const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
 	const keyboardHide = () => {
 		setIsShowKeyboard(false);
 		Keyboard.dismiss();
+	};
+
+	const onSubmitForm = () => {
+		setIsShowKeyboard(false);
+		Keyboard.dismiss();
+		setLogin("");
+		setEmail("");
+		setPassword("");
+		console.log({ login, email, password });
 	};
 
 	return (
@@ -33,6 +46,8 @@ export const RegistrationScreen = () => {
 										style={styles.input}
 										placeholder={"Логин"}
 										placeholderTextColor={"#BDBDBD"}
+										value={login}
+										onChangeText={value => setLogin(value)}
 										onFocus={() => setIsShowKeyboard(true)}
 									/>
 								</View>
@@ -41,6 +56,8 @@ export const RegistrationScreen = () => {
 										style={styles.input}
 										placeholder={"Адрес электронной почты"}
 										placeholderTextColor={"#BDBDBD"}
+										value={email}
+										onChangeText={value => setEmail(value)}
 										onFocus={() => setIsShowKeyboard(true)}
 									/>
 								</View>
@@ -50,16 +67,20 @@ export const RegistrationScreen = () => {
 										placeholder={"Пароль"}
 										placeholderTextColor={"#BDBDBD"}
 										secureTextEntry={true}
+										value={password}
+										onChangeText={value => setPassword(value)}
 										onFocus={() => setIsShowKeyboard(true)}
 									/>
 								</View>
-								<TouchableOpacity activeOpacity={0.8} style={styles.btnRegister}>
+								<TouchableOpacity activeOpacity={0.8} style={styles.btnRegister} onPress={onSubmitForm}>
 									<Text style={styles.btnRegisterTitle}>Зарегистрироваться</Text>
 								</TouchableOpacity>
 							</View>
-							<TouchableOpacity style={styles.btnLogin}>
-								<Text style={styles.btnLoginTitle}>Уже есть аккаунт? Войти</Text>
-							</TouchableOpacity>
+							{!isShowKeyboard && (
+								<TouchableOpacity style={styles.btnLogin}>
+									<Text style={styles.btnLoginTitle}>Уже есть аккаунт? Войти</Text>
+								</TouchableOpacity>
+							)}
 						</View>
 					</KeyboardAvoidingView>
 				</ImageBackground>
@@ -111,7 +132,6 @@ const styles = StyleSheet.create({
 		color: "#212121",
 	},
 	btnRegister: {
-		marginBottom: 16,
 		height: 50,
 
 		justifyContent: "center",
@@ -128,6 +148,7 @@ const styles = StyleSheet.create({
 	},
 	btnLogin: {
 		marginHorizontal: 50,
+		marginTop: 16,
 
 		justifyContent: "center",
 		alignItems: "center",
