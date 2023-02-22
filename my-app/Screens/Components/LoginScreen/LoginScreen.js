@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
 	StyleSheet,
 	Text,
@@ -10,6 +10,7 @@ import {
 	KeyboardAvoidingView,
 	TouchableWithoutFeedback,
 	Keyboard,
+	Dimensions,
 } from "react-native";
 
 import { useFonts } from "expo-font";
@@ -21,7 +22,23 @@ export const LoginScreen = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
+	const [emailFocused, setEmailFocused] = useState(false);
+	const [paswordFocused, setPaswordFocused] = useState(false);
+
 	const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
+	const [dimensions, setDimensions] = useState(Dimensions.get("window").width - 16 * 2);
+
+	useEffect(() => {
+		const onChange = () => {
+			const width = Dimensions.get("window").width - 16 * 2;
+			setDimensions(width);
+		};
+		const dimentionListener = Dimensions.addEventListener("change", onChange);
+		return () => {
+			dimentionListener.remove();
+		};
+	}, []);
 
 	const keyboardHide = () => {
 		setIsShowKeyboard(false);
@@ -29,6 +46,9 @@ export const LoginScreen = () => {
 	};
 
 	const onSubmitForm = () => {
+		if (email === "" || password === "") {
+			return alert("Please fill all fields");
+		}
 		setIsShowKeyboard(false);
 		Keyboard.dismiss();
 		setEmail("");
@@ -58,26 +78,42 @@ export const LoginScreen = () => {
 					<KeyboardAvoidingView behavior={Platform.OS == "ios" && "padding"}>
 						<View style={{ ...styles.box, paddingBottom: isShowKeyboard ? 32 : 111 }}>
 							<Text style={styles.formTitle}>Войти</Text>
-							<View style={styles.form}>
+							<View style={{ ...styles.form, width: dimensions }}>
 								<View style={{ marginBottom: 16 }}>
 									<TextInput
-										style={styles.input}
+										style={{
+											...styles.input,
+											borderColor: emailFocused ? "#FF6C00" : "#E8E8E8",
+											backgroundColor: emailFocused ? "#FFF" : "#F6F6F6",
+										}}
 										placeholder={"Адрес электронной почты"}
 										placeholderTextColor={"#BDBDBD"}
 										value={email}
 										onChangeText={value => setEmail(value)}
-										onFocus={() => setIsShowKeyboard(true)}
+										onFocus={() => {
+											setIsShowKeyboard(true);
+											setEmailFocused(true);
+										}}
+										onBlur={() => setEmailFocused(false)}
 									/>
 								</View>
 								<View style={{ marginBottom: 43 }}>
 									<TextInput
-										style={styles.input}
+										style={{
+											...styles.input,
+											borderColor: paswordFocused ? "#FF6C00" : "#E8E8E8",
+											backgroundColor: paswordFocused ? "#FFF" : "#F6F6F6",
+										}}
 										placeholder={"Пароль"}
 										placeholderTextColor={"#BDBDBD"}
 										secureTextEntry={true}
 										value={password}
 										onChangeText={value => setPassword(value)}
-										onFocus={() => setIsShowKeyboard(true)}
+										onFocus={() => {
+											setIsShowKeyboard(true);
+											setPaswordFocused(true);
+										}}
+										onBlur={() => setPaswordFocused(false)}
 									/>
 								</View>
 								<TouchableOpacity activeOpacity={0.8} style={styles.btnLogin} onPress={onSubmitForm}>
@@ -112,6 +148,8 @@ const styles = StyleSheet.create({
 		borderTopRightRadius: 25,
 		borderTopLeftRadius: 25,
 
+		alignItems: "center",
+
 		backgroundColor: "#FFF",
 	},
 	formTitle: {
@@ -121,7 +159,7 @@ const styles = StyleSheet.create({
 		color: "#212121",
 	},
 	form: {
-		marginHorizontal: 16,
+		backgroundColor: "#FFF",
 	},
 	input: {
 		paddingLeft: 16,
@@ -132,10 +170,8 @@ const styles = StyleSheet.create({
 		lineHeight: 19,
 
 		borderWidth: 1,
-		borderColor: "#E8E8E8",
 		borderRadius: 8,
 
-		backgroundColor: "#F6F6F6",
 		color: "#212121",
 	},
 	btnLogin: {
