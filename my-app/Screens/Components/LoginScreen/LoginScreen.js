@@ -18,7 +18,7 @@ import * as SplashScreen from "expo-splash-screen";
 
 SplashScreen.preventAutoHideAsync();
 
-export const LoginScreen = () => {
+export const LoginScreen = ({ navigation }) => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
@@ -72,8 +72,8 @@ export const LoginScreen = () => {
 	}
 
 	return (
-		<View style={styles.container} onLayout={onLayoutRootView}>
-			<TouchableWithoutFeedback onPress={keyboardHide}>
+		<TouchableWithoutFeedback onPress={keyboardHide}>
+			<View style={styles.container} onLayout={onLayoutRootView}>
 				<ImageBackground style={styles.image} source={require("../../../assets/images/background-image.jpg")}>
 					<KeyboardAvoidingView behavior={Platform.OS == "ios" && "padding"}>
 						<View style={{ ...styles.box, paddingBottom: isShowKeyboard ? 32 : 111 }}>
@@ -121,15 +121,15 @@ export const LoginScreen = () => {
 								</TouchableOpacity>
 							</View>
 							{!isShowKeyboard && (
-								<TouchableOpacity style={styles.btnRegister}>
+								<TouchableOpacity style={styles.btnRegister} onPress={() => navigation.navigate("Registration")}>
 									<Text style={styles.btnRegisterTitle}>Нет аккаунта? Зарегистрироваться</Text>
 								</TouchableOpacity>
 							)}
 						</View>
 					</KeyboardAvoidingView>
 				</ImageBackground>
-			</TouchableWithoutFeedback>
-		</View>
+			</View>
+		</TouchableWithoutFeedback>
 	);
 };
 

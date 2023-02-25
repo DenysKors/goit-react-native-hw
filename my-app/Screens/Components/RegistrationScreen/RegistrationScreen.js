@@ -19,7 +19,7 @@ import AddImage from "../../../assets/images/add.svg";
 
 SplashScreen.preventAutoHideAsync();
 
-export const RegistrationScreen = () => {
+export const RegistrationScreen = ({ navigation }) => {
 	const [login, setLogin] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -76,8 +76,8 @@ export const RegistrationScreen = () => {
 	}
 
 	return (
-		<View style={styles.container} onLayout={onLayoutRootView}>
-			<TouchableWithoutFeedback onPress={keyboardHide}>
+		<TouchableWithoutFeedback onPress={keyboardHide}>
+			<View style={styles.container} onLayout={onLayoutRootView}>
 				<ImageBackground style={styles.image} source={require("../../../assets/images/background-image.jpg")}>
 					<KeyboardAvoidingView behavior={Platform.OS === "ios" && "padding"}>
 						<View style={{ ...styles.box, paddingBottom: isShowKeyboard ? 32 : 45 }}>
@@ -147,15 +147,15 @@ export const RegistrationScreen = () => {
 								</TouchableOpacity>
 							</View>
 							{!isShowKeyboard && (
-								<TouchableOpacity style={styles.btnLogin}>
+								<TouchableOpacity style={styles.btnLogin} onPress={() => navigation.navigate("Login")}>
 									<Text style={styles.btnLoginTitle}>Уже есть аккаунт? Войти</Text>
 								</TouchableOpacity>
 							)}
 						</View>
 					</KeyboardAvoidingView>
 				</ImageBackground>
-			</TouchableWithoutFeedback>
-		</View>
+			</View>
+		</TouchableWithoutFeedback>
 	);
 };
 
