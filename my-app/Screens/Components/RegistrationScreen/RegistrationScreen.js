@@ -15,7 +15,7 @@ import {
 
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import AddImage from "../../../assets/images/add.svg";
+import { AntDesign } from "@expo/vector-icons";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -83,7 +83,7 @@ export const RegistrationScreen = ({ navigation }) => {
 						<View style={{ ...styles.box, paddingBottom: isShowKeyboard ? 32 : 45 }}>
 							<View style={styles.userImage}></View>
 							<TouchableOpacity style={styles.addImageBtn}>
-								<AddImage />
+								<AntDesign name="pluscircleo" size={25} color="#FF6C00" />
 							</TouchableOpacity>
 							<Text style={styles.formTitle}>Регистрация</Text>
 							<View style={{ ...styles.form, width: dimensions }}>
