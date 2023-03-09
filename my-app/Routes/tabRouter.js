@@ -41,7 +41,7 @@ export const TabRoute = ({ navigation }) => {
 			/>
 			<MainTab.Screen
 				options={{
-					// tabBarStyle: { display: "none" },
+					tabBarStyle: { display: "none" },
 					tabBarIcon: ({ focused, size, color }) => (
 						<View
 							style={{
