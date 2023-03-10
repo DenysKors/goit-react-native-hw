@@ -52,12 +52,12 @@ export const RegistrationScreen = ({ navigation }) => {
 		if (login === "" || email === "" || password === "") {
 			return alert("Please fill all fields");
 		}
+		console.log({ login, email, password });
 		setIsShowKeyboard(false);
 		Keyboard.dismiss();
 		setLogin("");
 		setEmail("");
 		setPassword("");
-		console.log({ login, email, password });
 	};
 
 	const [fontsLoaded] = useFonts({
