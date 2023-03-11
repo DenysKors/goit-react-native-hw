@@ -47,7 +47,7 @@ export const PostsScreen = ({ navigation }) => {
 			<FlatList
 				ListHeaderComponent={
 					<View style={styles.userBox}>
-						<Image style={styles.userImg} source={require("../../assets/images/user-image.jpg")} />
+						<Image style={styles.userImg} source={require("../../assets/images/user-image-m.jpg")} />
 						<View style={styles.userInfo}>
 							<Text style={styles.userName}>Natali Romanova</Text>
 							<Text style={styles.userEmail}>email@example.com</Text>
@@ -62,8 +62,12 @@ export const PostsScreen = ({ navigation }) => {
 							<Text style={styles.postTitle}>{item.title}</Text>
 							<View style={styles.postItem}>
 								<View style={styles.postComment}>
-									<TouchableOpacity style={styles.postBox} onPress={() => navigation.navigate("Комментарии")}>
-										<Feather name="message-circle" size={24} color="#BDBDBD" />
+									<TouchableOpacity
+										style={styles.postBox}
+										activeOpacity={0.5}
+										onPress={() => navigation.navigate("Комментарии")}
+									>
+										<Feather name="message-circle" size={24} color="#FF6C00" />
 										<Text style={styles.textBox}>{item.comments}</Text>
 									</TouchableOpacity>
 								</View>

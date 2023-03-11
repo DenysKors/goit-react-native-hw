@@ -3,7 +3,6 @@ import { useState, useCallback, useEffect } from "react";
 import {
 	View,
 	Text,
-	TextInput,
 	StyleSheet,
 	TouchableOpacity,
 	Dimensions,
@@ -12,6 +11,7 @@ import {
 	SafeAreaView,
 	Keyboard,
 } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
 
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
 		marginBottom: 10,
 		paddingHorizontal: 16,
 		paddingTop: 16,
+		paddingRight: 55,
 		paddingBottom: 15,
 		width: 340,
 		height: 50,

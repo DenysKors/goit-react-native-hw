@@ -11,7 +11,7 @@ export const postsScreenData = [
 		img: require("../assets/images/sunset.jpg"),
 		title: "Закат на Черном море",
 		location: "Odessa, Ukraine",
-		comments: 8,
+		comments: 5,
 	},
 	{
 		id: 3,
@@ -43,5 +43,32 @@ export const commentScreenData = [
 		time: "09:20",
 		userAvatar: require("../assets/images/guest-image-sm.jpg"),
 		text: "Thank you! That was very helpful!",
+	},
+];
+
+export const profileScreenData = [
+	{
+		id: 1,
+		img: require("../assets/images/forest.jpg"),
+		title: "Лес",
+		location: "Ukraine",
+		comments: 3,
+		likes: 153,
+	},
+	{
+		id: 2,
+		img: require("../assets/images/sunset.jpg"),
+		title: "Закат на Черном море",
+		location: "Ukraine",
+		comments: 5,
+		likes: 200,
+	},
+	{
+		id: 3,
+		img: require("../assets/images/house.jpg"),
+		title: "Старый домик в Венеции",
+		location: "Italy",
+		comments: 2,
+		likes: 200,
 	},
 ];
