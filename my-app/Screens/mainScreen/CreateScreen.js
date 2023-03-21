@@ -10,10 +10,13 @@ import {
 	TouchableOpacity,
 	Dimensions,
 	Platform,
+	Image,
 } from "react-native";
 
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import * as Location from "expo-location";
+import { Camera } from "expo-camera";
 
 import { AntDesign } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -21,13 +24,15 @@ import { EvilIcons } from "@expo/vector-icons";
 
 SplashScreen.preventAutoHideAsync();
 
-export const CreatePostsScreen = () => {
+export const CreatePostsScreen = ({ navigation }) => {
 	const [title, setTitle] = useState("");
 	const [location, setLocation] = useState("");
-
 	const [isPublish, setIsPublish] = useState(false);
-
 	const [dimensions, setDimensions] = useState(Dimensions.get("window").width - 16 * 2);
+	const [camera, setCamera] = useState(null);
+	const [photo, setPhoto] = useState(null);
+	const [longitude, setLongitude] = useState("");
+	const [latitude, setLatitude] = useState("");
 
 	useEffect(() => {
 		const onChange = () => {
@@ -41,24 +46,44 @@ export const CreatePostsScreen = () => {
 	}, []);
 
 	useEffect(() => {
-		if (title !== "" && location !== "") {
+		if (title !== "" && location !== "" && photo) {
 			setIsPublish(true);
-		} else if (title === "" || location === "") {
+		} else if (title === "" || location === "" || !photo) {
 			setIsPublish(false);
 		}
-	}, [title, location]);
+	}, [title, location, photo]);
+
+	useEffect(() => {
+		(async () => {
+			let { status } = await Location.requestForegroundPermissionsAsync();
+			if (status !== "granted") {
+				setErrorMsg("Permission to access location was denied");
+				return;
+			}
+		})();
+	}, []);
 
 	const onPublish = () => {
-		console.log({ title, location });
+		navigation.navigate("Публикации", { title, location, photo, longitude, latitude });
 		setTitle("");
 		setLocation("");
 		setIsPublish(false);
+		setPhoto(null);
 	};
 
 	const onDelete = () => {
 		setTitle("");
 		setLocation("");
 		setIsPublish(false);
+		setPhoto(null);
+	};
+
+	const takePhoto = async () => {
+		const photo = await camera.takePictureAsync();
+		const location = await Location.getCurrentPositionAsync();
+		setLatitude(location.coords.latitude);
+		setLongitude(location.coords.longitude);
+		setPhoto(photo.uri);
 	};
 
 	const [fontsLoaded] = useFonts({
@@ -85,10 +110,17 @@ export const CreatePostsScreen = () => {
 			<ScrollView>
 				<View style={styles.section}>
 					<View style={{ ...styles.contentBox, width: dimensions }}>
-						<TouchableOpacity style={styles.addPhotoBtn} activeOpacity={0.8}>
-							<MaterialIcons name="photo-camera" size={24} color="#BDBDBD" />
-						</TouchableOpacity>
+						<Camera style={{ ...styles.cameraBox, width: dimensions }} ref={setCamera}>
+							<TouchableOpacity style={styles.addPhotoBtn} activeOpacity={0.8} onPress={takePhoto}>
+								<MaterialIcons name="photo-camera" size={24} color="#FFFFFF" />
+							</TouchableOpacity>
+						</Camera>
 					</View>
+					{photo && (
+						<View style={{ ...styles.photoContainer, width: dimensions }}>
+							<Image source={{ uri: photo }} style={{ height: 240, width: dimensions }} />
+						</View>
+					)}
 					<View style={styles.contentBoxText}>
 						<Text style={styles.contentText}>Загрузите фото</Text>
 					</View>
@@ -119,7 +151,11 @@ export const CreatePostsScreen = () => {
 							<Text style={{ ...styles.publishBtnText, color: isPublish ? "#FFFFFF" : "#BDBDBD" }}>Опубликовать</Text>
 						</TouchableOpacity>
 					</View>
-					<TouchableOpacity style={styles.deleteBtn} activeOpacity={0.8} onPress={onDelete}>
+					<TouchableOpacity
+						style={{ ...styles.deleteBtn, backgroundColor: photo ? "#FF6C00" : "#F6F6F6" }}
+						activeOpacity={0.8}
+						onPress={onDelete}
+					>
 						<AntDesign name="delete" size={24} color="#BDBDBD" />
 					</TouchableOpacity>
 				</View>
@@ -141,7 +177,6 @@ const styles = StyleSheet.create({
 	},
 	contentBox: {
 		marginBottom: 8,
-		alignItems: "center",
 		justifyContent: "center",
 		height: 240,
 		backgroundColor: "#F6F6F6",
@@ -149,6 +184,18 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderRadius: 8,
 		borderColor: "#E8E8E8",
+	},
+	cameraBox: {
+		height: 240,
+		justifyContent: "center",
+		alignItems: "center",
+		borderRadius: 8,
+		borderWidth: 1,
+	},
+	photoContainer: {
+		height: 240,
+		borderRadius: 8,
+		borderWidth: 1,
 	},
 	contentBoxText: {
 		width: "100%",
@@ -209,6 +256,7 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		borderRadius: 30,
 		backgroundColor: "#FFFFFF",
+		opacity: 0.3,
 	},
 	deleteBtn: {
 		marginTop: 80,
@@ -216,7 +264,6 @@ const styles = StyleSheet.create({
 		height: 40,
 		alignItems: "center",
 		justifyContent: "center",
-		backgroundColor: "#F6F6F6",
 		borderRadius: 20,
 	},
 });

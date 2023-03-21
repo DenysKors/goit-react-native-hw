@@ -11,8 +11,8 @@ import { Feather } from "@expo/vector-icons";
 
 SplashScreen.preventAutoHideAsync();
 
-export const PostsScreen = ({ navigation }) => {
-	const [posts, setPosts] = useState(postsScreenData);
+export const PostsScreen = ({ navigation, route }) => {
+	const [posts, setPosts] = useState([]);
 	const [dimensions, setDimensions] = useState(Dimensions.get("window").width - 16 * 2);
 
 	useEffect(() => {
@@ -25,6 +25,20 @@ export const PostsScreen = ({ navigation }) => {
 			dimentionListener.remove();
 		};
 	}, []);
+
+	useEffect(() => {
+		if (route.params) {
+			const newPost = {
+				img: route.params.photo,
+				title: route.params.title,
+				location: route.params.location,
+				longitude: route.params.longitude,
+				latitude: route.params.latitude,
+			};
+			console.log(newPost);
+			setPosts(prevState => [...prevState, newPost]);
+		}
+	}, [route.params]);
 
 	const [fontsLoaded] = useFonts({
 		"Roboto-Medium": require("../../assets/fonts/Roboto-Medium.ttf"),
@@ -58,7 +72,7 @@ export const PostsScreen = ({ navigation }) => {
 				renderItem={({ item }) => {
 					return (
 						<View>
-							<Image source={item.img} style={{ ...styles.postImg, width: dimensions }} />
+							<Image source={{ uri: item.img }} style={{ ...styles.postImg, width: dimensions }} />
 							<Text style={styles.postTitle}>{item.title}</Text>
 							<View style={styles.postItem}>
 								<View style={styles.postComment}>
@@ -71,15 +85,21 @@ export const PostsScreen = ({ navigation }) => {
 										<Text style={styles.textBox}>{item.comments}</Text>
 									</TouchableOpacity>
 								</View>
-								<View style={styles.postBox}>
+								<TouchableOpacity
+									style={styles.postBox}
+									activeOpacity={0.5}
+									onPress={() => {
+										navigation.navigate("Map", { longitude: item.longitude, latitude: item.latitude });
+									}}
+								>
 									<EvilIcons name="location" size={28} color="#BDBDBD" />
 									<Text style={styles.textBox}>{item.location}</Text>
-								</View>
+								</TouchableOpacity>
 							</View>
 						</View>
 					);
 				}}
-				keyExtractor={item => item.id}
+				keyExtractor={(item, index) => index}
 			/>
 		</View>
 	);
@@ -121,6 +141,7 @@ const styles = StyleSheet.create({
 		color: "#212121",
 	},
 	postImg: {
+		height: 300,
 		resizeMode: "cover",
 		borderRadius: 8,
 	},

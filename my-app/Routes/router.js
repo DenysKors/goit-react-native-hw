@@ -37,7 +37,8 @@ export const useRoute = isAuth => {
 			/>
 			<MainStack.Screen
 				options={{
-					headerShown: false,
+					headerShown: true,
+					headerTitleAlign: "center",
 				}}
 				name="Map"
 				component={MapScreen}
