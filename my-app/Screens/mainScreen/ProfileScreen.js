@@ -1,9 +1,6 @@
 import React from "react";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Dimensions, ImageBackground, FlatList, Image, TouchableOpacity } from "react-native";
-
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
 
 import { profileScreenData } from "../../data/postsData";
 
@@ -11,8 +8,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { EvilIcons } from "@expo/vector-icons";
-
-SplashScreen.preventAutoHideAsync();
 
 export const ProfileScreen = ({ navigation }) => {
 	const [profile, setProfile] = useState(profileScreenData);
@@ -30,23 +25,8 @@ export const ProfileScreen = ({ navigation }) => {
 		};
 	}, []);
 
-	const [fontsLoaded] = useFonts({
-		"Roboto-Medium": require("../../assets/fonts/Roboto-Medium.ttf"),
-		"Roboto-Regular": require("../../assets/fonts/Roboto-Regular.ttf"),
-		"Roboto-Bold": require("../../assets/fonts/Roboto-Bold.ttf"),
-	});
-
-	const onLayoutRootView = useCallback(async () => {
-		if (fontsLoaded) {
-			await SplashScreen.hideAsync();
-		}
-	}, [fontsLoaded]);
-
-	if (!fontsLoaded) {
-		return null;
-	}
 	return (
-		<View onLayout={onLayoutRootView} style={styles.container}>
+		<View style={styles.container}>
 			<ImageBackground style={styles.image} source={require("../../assets/images/background-image.jpg")}>
 				<FlatList
 					ListHeaderComponent={

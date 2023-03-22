@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
 	View,
 	Text,
@@ -13,13 +13,9 @@ import {
 } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
 import { commentScreenData } from "../../data/postsData";
 
 import { Ionicons } from "@expo/vector-icons";
-
-SplashScreen.preventAutoHideAsync();
 
 export const CommentsScreen = () => {
 	const [comments, setComments] = useState(commentScreenData);
@@ -47,23 +43,8 @@ export const CommentsScreen = () => {
 		Keyboard.dismiss();
 	};
 
-	const [fontsLoaded] = useFonts({
-		"Roboto-Medium": require("../../assets/fonts/Roboto-Medium.ttf"),
-		"Roboto-Regular": require("../../assets/fonts/Roboto-Regular.ttf"),
-		"Roboto-Bold": require("../../assets/fonts/Roboto-Bold.ttf"),
-	});
-
-	const onLayoutRootView = useCallback(async () => {
-		if (fontsLoaded) {
-			await SplashScreen.hideAsync();
-		}
-	}, [fontsLoaded]);
-
-	if (!fontsLoaded) {
-		return null;
-	}
 	return (
-		<SafeAreaView style={{ ...styles.container, height: "100%" }} onLayout={onLayoutRootView}>
+		<SafeAreaView style={{ ...styles.container, height: "100%" }}>
 			<FlatList
 				data={comments}
 				style={{ backgroundColor: "#FFFFFF" }}

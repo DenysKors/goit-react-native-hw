@@ -1,24 +1,3 @@
-export const postsScreenData = [
-	{
-		img: "../assets/images/forest.jpg",
-		title: "Лес",
-		location: "Ivano-Frankivs'k Region, Ukraine",
-		comments: 3,
-	},
-	{
-		img: "../assets/images/sunset.jpg",
-		title: "Закат на Черном море",
-		location: "Odessa, Ukraine",
-		comments: 5,
-	},
-	{
-		img: "../assets/images/sunset.jpg",
-		title: "Закат на Черном море",
-		location: "Odessa, Ukraine",
-		comments: 2,
-	},
-];
-
 export const commentScreenData = [
 	{
 		id: 1,

@@ -1,15 +1,9 @@
 import React from "react";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, Image } from "react-native";
-
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
-import { postsScreenData } from "../../data/postsData";
 
 import { EvilIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
-
-SplashScreen.preventAutoHideAsync();
 
 export const PostsScreen = ({ navigation, route }) => {
 	const [posts, setPosts] = useState([]);
@@ -40,24 +34,8 @@ export const PostsScreen = ({ navigation, route }) => {
 		}
 	}, [route.params]);
 
-	const [fontsLoaded] = useFonts({
-		"Roboto-Medium": require("../../assets/fonts/Roboto-Medium.ttf"),
-		"Roboto-Regular": require("../../assets/fonts/Roboto-Regular.ttf"),
-		"Roboto-Bold": require("../../assets/fonts/Roboto-Bold.ttf"),
-	});
-
-	const onLayoutRootView = useCallback(async () => {
-		if (fontsLoaded) {
-			await SplashScreen.hideAsync();
-		}
-	}, [fontsLoaded]);
-
-	if (!fontsLoaded) {
-		return null;
-	}
-
 	return (
-		<View onLayout={onLayoutRootView} style={styles.container}>
+		<View style={styles.container}>
 			<FlatList
 				ListHeaderComponent={
 					<View style={styles.userBox}>

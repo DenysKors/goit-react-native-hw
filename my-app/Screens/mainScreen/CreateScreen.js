@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
 	View,
 	Text,
@@ -13,16 +13,12 @@ import {
 	Image,
 } from "react-native";
 
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
 import * as Location from "expo-location";
 import { Camera } from "expo-camera";
 
 import { AntDesign } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { EvilIcons } from "@expo/vector-icons";
-
-SplashScreen.preventAutoHideAsync();
 
 export const CreatePostsScreen = ({ navigation }) => {
 	const [title, setTitle] = useState("");
@@ -86,27 +82,8 @@ export const CreatePostsScreen = ({ navigation }) => {
 		setPhoto(photo.uri);
 	};
 
-	const [fontsLoaded] = useFonts({
-		"Roboto-Medium": require("../../assets/fonts/Roboto-Medium.ttf"),
-		"Roboto-Regular": require("../../assets/fonts/Roboto-Regular.ttf"),
-	});
-
-	const onLayoutRootView = useCallback(async () => {
-		if (fontsLoaded) {
-			await SplashScreen.hideAsync();
-		}
-	}, [fontsLoaded]);
-
-	if (!fontsLoaded) {
-		return null;
-	}
-
 	return (
-		<KeyboardAvoidingView
-			style={styles.container}
-			behavior={Platform.OS === "ios" && "padding"}
-			onLayout={onLayoutRootView}
-		>
+		<KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" && "padding"}>
 			<ScrollView>
 				<View style={styles.section}>
 					<View style={{ ...styles.contentBox, width: dimensions }}>

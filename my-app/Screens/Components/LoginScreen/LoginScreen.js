@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
 	StyleSheet,
 	Text,
@@ -12,11 +12,6 @@ import {
 	Keyboard,
 	Dimensions,
 } from "react-native";
-
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
-
-SplashScreen.preventAutoHideAsync();
 
 export const LoginScreen = ({ navigation }) => {
 	const [email, setEmail] = useState("");
@@ -56,24 +51,9 @@ export const LoginScreen = ({ navigation }) => {
 		console.log({ email, password });
 	};
 
-	const [fontsLoaded] = useFonts({
-		"Roboto-Medium": require("../../../assets/fonts/Roboto-Medium.ttf"),
-		"Roboto-Regular": require("../../../assets/fonts/Roboto-Regular.ttf"),
-	});
-
-	const onLayoutRootView = useCallback(async () => {
-		if (fontsLoaded) {
-			await SplashScreen.hideAsync();
-		}
-	}, [fontsLoaded]);
-
-	if (!fontsLoaded) {
-		return null;
-	}
-
 	return (
 		<TouchableWithoutFeedback onPress={keyboardHide}>
-			<View style={styles.container} onLayout={onLayoutRootView}>
+			<View style={styles.container}>
 				<ImageBackground style={styles.image} source={require("../../../assets/images/background-image.jpg")}>
 					<KeyboardAvoidingView behavior={Platform.OS == "ios" && "padding"}>
 						<View style={{ ...styles.box, paddingBottom: isShowKeyboard ? 32 : 111 }}>
@@ -154,6 +134,7 @@ const styles = StyleSheet.create({
 	},
 	formTitle: {
 		marginBottom: 32,
+		fontFamily: "Roboto-Medium",
 		fontSize: 30,
 		textAlign: "center",
 		color: "#212121",
