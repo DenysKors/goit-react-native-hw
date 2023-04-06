@@ -1,13 +1,18 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, Image } from "react-native";
+import { View, Text, StyleSheet, Dimensions, FlatList, Image, Pressable } from "react-native";
+import { useSelector } from "react-redux";
+import { collection, query, onSnapshot } from "firebase/firestore";
+import { firestore } from "../../firebase/config";
 
 import { EvilIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 
-export const PostsScreen = ({ navigation, route }) => {
+export const PostsScreen = ({ navigation }) => {
 	const [posts, setPosts] = useState([]);
 	const [dimensions, setDimensions] = useState(Dimensions.get("window").width - 16 * 2);
+
+	const { email, userName } = useSelector(state => state.auth);
 
 	useEffect(() => {
 		const onChange = () => {
@@ -20,19 +25,20 @@ export const PostsScreen = ({ navigation, route }) => {
 		};
 	}, []);
 
-	useEffect(() => {
-		if (route.params) {
-			const newPost = {
-				img: route.params.photo,
-				title: route.params.title,
-				location: route.params.location,
-				longitude: route.params.longitude,
-				latitude: route.params.latitude,
-			};
-			console.log(newPost);
-			setPosts(prevState => [...prevState, newPost]);
+	const getAllPosts = async () => {
+		try {
+			const postsRef = query(collection(firestore, "posts"));
+			onSnapshot(postsRef, snapshot => {
+				setPosts(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+			});
+		} catch (error) {
+			console.log(error.message);
 		}
-	}, [route.params]);
+	};
+
+	useEffect(() => {
+		getAllPosts();
+	}, []);
 
 	return (
 		<View style={styles.container}>
@@ -41,8 +47,8 @@ export const PostsScreen = ({ navigation, route }) => {
 					<View style={styles.userBox}>
 						<Image style={styles.userImg} source={require("../../assets/images/user-image-m.jpg")} />
 						<View style={styles.userInfo}>
-							<Text style={styles.userName}>Natali Romanova</Text>
-							<Text style={styles.userEmail}>email@example.com</Text>
+							<Text style={styles.userName}>{userName}</Text>
+							<Text style={styles.userEmail}>{email}</Text>
 						</View>
 					</View>
 				}
@@ -50,34 +56,42 @@ export const PostsScreen = ({ navigation, route }) => {
 				renderItem={({ item }) => {
 					return (
 						<View>
-							<Image source={{ uri: item.img }} style={{ ...styles.postImg, width: dimensions }} />
+							<Image source={{ uri: item.photo }} style={{ ...styles.postImg, width: dimensions }} />
 							<Text style={styles.postTitle}>{item.title}</Text>
 							<View style={styles.postItem}>
 								<View style={styles.postComment}>
-									<TouchableOpacity
+									<Pressable
 										style={styles.postBox}
-										activeOpacity={0.5}
-										onPress={() => navigation.navigate("Комментарии")}
+										onPress={() =>
+											navigation.navigate("Комментарии", {
+												postId: item.id,
+												postPhoto: item.photo,
+												commentQty: item.commentQty,
+											})
+										}
 									>
-										<Feather name="message-circle" size={24} color="#FF6C00" />
-										<Text style={styles.textBox}>{item.comments}</Text>
-									</TouchableOpacity>
+										<Feather name="message-circle" size={24} color={item.commentQty === 0 ? "#BDBDBD" : "#FF6C00"} />
+										<Text style={styles.textBox}>{item.commentQty}</Text>
+									</Pressable>
 								</View>
-								<TouchableOpacity
+								<Pressable
 									style={styles.postBox}
-									activeOpacity={0.5}
 									onPress={() => {
-										navigation.navigate("Map", { longitude: item.longitude, latitude: item.latitude });
+										navigation.navigate("Map", {
+											longitude: item.longitude,
+											latitude: item.latitude,
+											title: item.title,
+										});
 									}}
 								>
 									<EvilIcons name="location" size={28} color="#BDBDBD" />
 									<Text style={styles.textBox}>{item.location}</Text>
-								</TouchableOpacity>
+								</Pressable>
 							</View>
 						</View>
 					);
 				}}
-				keyExtractor={(item, index) => index}
+				keyExtractor={(item, indx) => indx.toString()}
 			/>
 		</View>
 	);

@@ -12,6 +12,9 @@ import {
 	Keyboard,
 	Dimensions,
 } from "react-native";
+import { useDispatch } from "react-redux";
+
+import { authLoginUser } from "../../../redux/auth/authOperations";
 
 export const LoginScreen = ({ navigation }) => {
 	const [email, setEmail] = useState("");
@@ -21,6 +24,8 @@ export const LoginScreen = ({ navigation }) => {
 	const [paswordFocused, setPaswordFocused] = useState(false);
 
 	const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
+	const dispatch = useDispatch();
 
 	const [dimensions, setDimensions] = useState(Dimensions.get("window").width - 16 * 2);
 
@@ -46,9 +51,9 @@ export const LoginScreen = ({ navigation }) => {
 		}
 		setIsShowKeyboard(false);
 		Keyboard.dismiss();
+		dispatch(authLoginUser({ email, password }));
 		setEmail("");
 		setPassword("");
-		console.log({ email, password });
 	};
 
 	return (

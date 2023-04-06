@@ -12,7 +12,9 @@ import {
 	Keyboard,
 	Dimensions,
 } from "react-native";
+import { useDispatch } from "react-redux";
 
+import { authRegisterUser } from "../../../redux/auth/authOperations";
 import { AntDesign } from "@expo/vector-icons";
 
 export const RegistrationScreen = ({ navigation }) => {
@@ -25,6 +27,8 @@ export const RegistrationScreen = ({ navigation }) => {
 	const [paswordFocused, setPaswordFocused] = useState(false);
 
 	const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
+	const dispatch = useDispatch();
 
 	const [dimensions, setDimensions] = useState(Dimensions.get("window").width - 16 * 2);
 
@@ -48,9 +52,9 @@ export const RegistrationScreen = ({ navigation }) => {
 		if (login === "" || email === "" || password === "") {
 			return alert("Please fill all fields");
 		}
-		console.log({ login, email, password });
 		setIsShowKeyboard(false);
 		Keyboard.dismiss();
+		dispatch(authRegisterUser({ login, email, password }));
 		setLogin("");
 		setEmail("");
 		setPassword("");

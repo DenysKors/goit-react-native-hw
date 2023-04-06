@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import {
 	View,
 	Text,
@@ -7,14 +8,18 @@ import {
 	StyleSheet,
 	KeyboardAvoidingView,
 	ScrollView,
-	TouchableOpacity,
 	Dimensions,
 	Platform,
 	Image,
+	Pressable,
+	TouchableOpacity,
 } from "react-native";
 
 import * as Location from "expo-location";
 import { Camera } from "expo-camera";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
+import { firestore } from "../../firebase/config";
 
 import { AntDesign } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -29,6 +34,8 @@ export const CreatePostsScreen = ({ navigation }) => {
 	const [photo, setPhoto] = useState(null);
 	const [longitude, setLongitude] = useState("");
 	const [latitude, setLatitude] = useState("");
+
+	const { userId, userName } = useSelector(state => state.auth);
 
 	useEffect(() => {
 		const onChange = () => {
@@ -47,7 +54,7 @@ export const CreatePostsScreen = ({ navigation }) => {
 		} else if (title === "" || location === "" || !photo) {
 			setIsPublish(false);
 		}
-	}, [title, location, photo]);
+	}, [title, location]);
 
 	useEffect(() => {
 		(async () => {
@@ -59,14 +66,6 @@ export const CreatePostsScreen = ({ navigation }) => {
 		})();
 	}, []);
 
-	const onPublish = () => {
-		navigation.navigate("Публикации", { title, location, photo, longitude, latitude });
-		setTitle("");
-		setLocation("");
-		setIsPublish(false);
-		setPhoto(null);
-	};
-
 	const onDelete = () => {
 		setTitle("");
 		setLocation("");
@@ -75,11 +74,60 @@ export const CreatePostsScreen = ({ navigation }) => {
 	};
 
 	const takePhoto = async () => {
-		const photo = await camera.takePictureAsync();
-		const location = await Location.getCurrentPositionAsync();
-		setLatitude(location.coords.latitude);
-		setLongitude(location.coords.longitude);
-		setPhoto(photo.uri);
+		try {
+			const { uri } = await camera.takePictureAsync();
+			const location = await Location.getCurrentPositionAsync();
+			setLatitude(location.coords.latitude);
+			setLongitude(location.coords.longitude);
+			setPhoto(uri);
+		} catch (error) {
+			console.log(error.messsage);
+		}
+	};
+
+	const uploadPhoto = async () => {
+		try {
+			const response = await fetch(photo);
+			const file = await response.blob();
+			const postId = Date.now().toString();
+			const storage = getStorage();
+			const storageRef = ref(storage, `postImage/${postId}`);
+
+			await uploadBytes(storageRef, file);
+
+			const photoRef = await getDownloadURL(storageRef);
+			return photoRef;
+		} catch (error) {
+			console.log(error.message);
+		}
+	};
+
+	const uploadPost = async () => {
+		const dbPhotoRef = await uploadPhoto();
+		try {
+			await addDoc(collection(firestore, "posts"), {
+				photo: dbPhotoRef,
+				title,
+				userId,
+				userName,
+				location,
+				longitude,
+				latitude,
+				commentQty: 0,
+				likesQty: 0,
+			});
+		} catch (error) {
+			console.log(error.messsage);
+		}
+	};
+
+	const onPublish = async () => {
+		await uploadPost();
+		setTitle("");
+		setLocation("");
+		setIsPublish(false);
+		setPhoto(null);
+		navigation.navigate("Публикации");
 	};
 
 	return (
@@ -88,7 +136,7 @@ export const CreatePostsScreen = ({ navigation }) => {
 				<View style={styles.section}>
 					<View style={{ ...styles.contentBox, width: dimensions }}>
 						<Camera style={{ ...styles.cameraBox, width: dimensions }} ref={setCamera}>
-							<TouchableOpacity style={styles.addPhotoBtn} activeOpacity={0.8} onPress={takePhoto}>
+							<TouchableOpacity style={styles.addPhotoBtn} onPress={takePhoto}>
 								<MaterialIcons name="photo-camera" size={24} color="#FFFFFF" />
 							</TouchableOpacity>
 						</Camera>
@@ -119,22 +167,17 @@ export const CreatePostsScreen = ({ navigation }) => {
 								onChangeText={value => setLocation(value)}
 							></TextInput>
 						</View>
-						<TouchableOpacity
+						<Pressable
 							style={{ ...styles.publishBtn, backgroundColor: isPublish ? "#FF6C00" : "#F6F6F6" }}
-							activeOpacity={0.8}
 							disabled={isPublish ? false : true}
 							onPress={onPublish}
 						>
 							<Text style={{ ...styles.publishBtnText, color: isPublish ? "#FFFFFF" : "#BDBDBD" }}>Опубликовать</Text>
-						</TouchableOpacity>
+						</Pressable>
 					</View>
-					<TouchableOpacity
-						style={{ ...styles.deleteBtn, backgroundColor: photo ? "#FF6C00" : "#F6F6F6" }}
-						activeOpacity={0.8}
-						onPress={onDelete}
-					>
+					<Pressable style={{ ...styles.deleteBtn, backgroundColor: photo ? "#FF6C00" : "#F6F6F6" }} onPress={onDelete}>
 						<AntDesign name="delete" size={24} color="#BDBDBD" />
-					</TouchableOpacity>
+					</Pressable>
 				</View>
 			</ScrollView>
 		</KeyboardAvoidingView>
@@ -158,7 +201,6 @@ const styles = StyleSheet.create({
 		height: 240,
 		backgroundColor: "#F6F6F6",
 		borderStyle: "solid",
-		borderWidth: 1,
 		borderRadius: 8,
 		borderColor: "#E8E8E8",
 	},
@@ -167,12 +209,10 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 		borderRadius: 8,
-		borderWidth: 1,
 	},
 	photoContainer: {
 		height: 240,
 		borderRadius: 8,
-		borderWidth: 1,
 	},
 	contentBoxText: {
 		width: "100%",

@@ -1,6 +1,9 @@
 import { View, TouchableOpacity } from "react-native";
+import { useDispatch } from "react-redux";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
+import { authLogoutUser } from "../redux/auth/authOperations";
 
 import { PostsScreen } from "../Screens/mainScreen/PostsScreen";
 import { CreatePostsScreen } from "../Screens/mainScreen/CreateScreen";
@@ -14,6 +17,12 @@ import { Feather } from "@expo/vector-icons";
 const MainTab = createBottomTabNavigator();
 
 export const TabRoute = ({ navigation }) => {
+	const dispatch = useDispatch();
+
+	const LogOut = () => {
+		dispatch(authLogoutUser());
+	};
+
 	return (
 		<MainTab.Navigator
 			screenOptions={{
@@ -32,7 +41,7 @@ export const TabRoute = ({ navigation }) => {
 					tabBarIcon: ({ focused, size, color }) => <SimpleLineIcons name="grid" size={24} color={color} />,
 					headerRight: ({ focused, size, color }) => (
 						<TouchableOpacity activeOpacity={0.8}>
-							<MaterialIcons name="logout" size={24} color="#BDBDBD" />
+							<MaterialIcons name="logout" size={24} color="#BDBDBD" onPress={LogOut} />
 						</TouchableOpacity>
 					),
 				}}

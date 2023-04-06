@@ -1,10 +1,12 @@
 import { StatusBar } from "expo-status-bar";
-import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaView } from "react-native";
 import { useCallback } from "react";
-
-import { useRoute } from "./Routes/router";
+import { Provider } from "react-redux";
 import { useFonts } from "expo-font";
+
+import { store } from "./redux/store";
+
+import { Main } from "./Screens/Components/Main/Main";
 
 import * as SplashScreen from "expo-splash-screen";
 SplashScreen.preventAutoHideAsync();
@@ -26,14 +28,14 @@ export default function App() {
 		return null;
 	}
 
-	const routing = useRoute(true);
-
 	return (
 		<>
 			<SafeAreaView style={{ flex: 1 }} onLayout={onLayoutRootView}>
-				<NavigationContainer>{routing}</NavigationContainer>
-				<StatusBar style="auto" />
+				<Provider store={store}>
+					<Main />
+				</Provider>
 			</SafeAreaView>
+			<StatusBar style="auto" />
 		</>
 	);
 }
