@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Dimensions, ImageBackground, FlatList, Image, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { collection, query, onSnapshot, where } from "firebase/firestore";
+import { collection, query, onSnapshot, where, updateDoc, doc } from "firebase/firestore";
 import { firestore } from "../../firebase/config";
 
 import { authLogoutUser } from "../../redux/auth/authOperations";
@@ -40,10 +40,25 @@ export const ProfileScreen = ({ navigation }) => {
 
 	useEffect(() => {
 		getUserPosts();
-	});
+	}, []);
 
 	const LogOut = () => {
 		dispatch(authLogoutUser());
+	};
+
+	const addLike = async (postId, likesQty, likeStatus) => {
+		if (likeStatus) {
+			return console.log("Already liked!");
+		}
+		try {
+			const postRef = doc(firestore, "posts", postId);
+			await updateDoc(postRef, {
+				likesQty: likesQty + 1,
+				likeStatus: true,
+			});
+		} catch (error) {
+			error.message;
+		}
 	};
 
 	return (
@@ -110,8 +125,11 @@ export const ProfileScreen = ({ navigation }) => {
 										<Text style={styles.statisticText}>{item.commentQty}</Text>
 									</Pressable>
 									<View style={{ marginLeft: 22 }}>
-										<Pressable style={styles.statisticWrap} activeOpacity={0.5} onPress={() => {}}>
-											<AntDesign name="like2" size={20} color={item.likesQty === 0 ? "#BDBDBD" : "#FF6C00"} />
+										<Pressable
+											style={styles.statisticWrap}
+											onPress={() => addLike(item.id, item.likesQty, item.likeStatus)}
+										>
+											<AntDesign name="like2" size={20} color={item.likeStatus ? "#FF6C00" : "#BDBDBD"} />
 											<Text style={styles.statisticText}>{item.likesQty}</Text>
 										</Pressable>
 									</View>

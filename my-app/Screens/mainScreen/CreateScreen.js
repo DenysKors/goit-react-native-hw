@@ -28,7 +28,7 @@ import { EvilIcons } from "@expo/vector-icons";
 export const CreatePostsScreen = ({ navigation }) => {
 	const [title, setTitle] = useState("");
 	const [location, setLocation] = useState("");
-	const [isPublish, setIsPublish] = useState(false);
+	const [isPublish, setIsPublish] = useState(true);
 	const [dimensions, setDimensions] = useState(Dimensions.get("window").width - 16 * 2);
 	const [camera, setCamera] = useState(null);
 	const [photo, setPhoto] = useState(null);
@@ -54,7 +54,7 @@ export const CreatePostsScreen = ({ navigation }) => {
 		} else if (title === "" || location === "" || !photo) {
 			setIsPublish(false);
 		}
-	}, [title, location]);
+	}, [title, location, photo]);
 
 	useEffect(() => {
 		(async () => {
@@ -115,6 +115,7 @@ export const CreatePostsScreen = ({ navigation }) => {
 				latitude,
 				commentQty: 0,
 				likesQty: 0,
+				likeStatus: false,
 			});
 		} catch (error) {
 			console.log(error.messsage);
@@ -122,12 +123,16 @@ export const CreatePostsScreen = ({ navigation }) => {
 	};
 
 	const onPublish = async () => {
-		await uploadPost();
-		setTitle("");
-		setLocation("");
-		setIsPublish(false);
-		setPhoto(null);
-		navigation.navigate("Публикации");
+		try {
+			await uploadPost();
+			setTitle("");
+			setLocation("");
+			setIsPublish(false);
+			setPhoto(null);
+			navigation.navigate("Публикации");
+		} catch (error) {
+			console.log(error.messsage);
+		}
 	};
 
 	return (

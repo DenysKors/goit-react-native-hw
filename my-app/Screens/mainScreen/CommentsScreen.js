@@ -98,7 +98,7 @@ export const CommentsScreen = ({ route }) => {
 								width: dimensions,
 							}}
 						>
-							<Image source={item.userAvatar} style={styles.commentAvatarImage} />
+							<Text style={styles.commentUserName}>{item.userName}</Text>
 							<View
 								style={{
 									...styles.textWrapper,
@@ -157,11 +157,12 @@ const styles = StyleSheet.create({
 		borderBottomRightRadius: 6,
 	},
 
-	commentAvatarImage: {
-		width: 28,
+	commentUserName: {
 		height: 28,
+		fontSize: 12,
 		marginRight: 16,
-		resizeMode: "cover",
+		fontFamily: "Roboto-Regular",
+		color: "#212121",
 	},
 	commentText: {
 		fontSize: 13,
